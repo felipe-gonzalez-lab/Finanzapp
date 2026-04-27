@@ -3,45 +3,38 @@ package com.example.finanzapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.room.Room
+import com.example.finanzapp.data.local.database.AppDatabase
+import com.example.finanzapp.repository.MovimientoRepository
+import com.example.finanzapp.ui.screens.PantallaPrincipal
 import com.example.finanzapp.ui.theme.FinanzappTheme
+import com.example.finanzapp.viewmodel.MovimientoViewModel
+import com.example.finanzapp.viewmodel.MovimientoViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        val database = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "finanzapp_db"
+        ).build()
+
+        val repository = MovimientoRepository(database.movimientoDao())
+        val factory = MovimientoViewModelFactory(repository)
+
         setContent {
             FinanzappTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                val movimientoViewModel: MovimientoViewModel = viewModel(
+                    factory = factory
+                )
+
+                PantallaPrincipal(
+                    viewModel = movimientoViewModel
+                )
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FinanzappTheme {
-        Greeting("Android")
     }
 }
