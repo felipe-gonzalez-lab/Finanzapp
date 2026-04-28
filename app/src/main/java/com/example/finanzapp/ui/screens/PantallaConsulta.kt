@@ -5,27 +5,23 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.finanzapp.data.local.entity.Movimiento
 import com.example.finanzapp.data.model.CategoriasFinancieras
 import com.example.finanzapp.viewmodel.MovimientoViewModel
 
 @Composable
-fun PantallaRegistro(
+fun PantallaConsulta(
     viewModel: MovimientoViewModel,
-    onVolver: () -> Unit,
-    movimientoEditar: Movimiento? = null
+    onVolver: () -> Unit
 ) {
-    var tipo by remember { mutableStateOf(movimientoEditar?.tipo ?: "") }
-    var categoria by remember { mutableStateOf(movimientoEditar?.categoria ?: "") }
-    var monto by remember { mutableStateOf(movimientoEditar?.monto?.toString() ?: "") }
-    var fecha by remember { mutableStateOf(movimientoEditar?.fecha ?: "") }
-    var descripcion by remember { mutableStateOf(movimientoEditar?.descripcion ?: "") }
+    var tipo by remember { mutableStateOf("") }
+    var categoria by remember { mutableStateOf("") }
+    var mes by remember { mutableStateOf("") }
 
-    var mostrarError by remember { mutableStateOf(false) }
     var mostrarTipos by remember { mutableStateOf(false) }
     var mostrarCategorias by remember { mutableStateOf(false) }
+    var mostrarError by remember { mutableStateOf(false) }
 
-    val montoDouble = monto.toDoubleOrNull()
+    val totalConsulta by viewModel.totalConsulta.collectAsState()
     val categoriasDisponibles = CategoriasFinancieras.obtenerCategoriasPorTipo(tipo)
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -37,7 +33,7 @@ fun PantallaRegistro(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = if (movimientoEditar == null) "Registrar Movimiento" else "Editar Movimiento",
+            text = "Consulta por categoría",
             style = MaterialTheme.typography.headlineSmall
         )
 
@@ -68,10 +64,6 @@ fun PantallaRegistro(
             }
         }
 
-        if (mostrarError && tipo.isBlank()) {
-            Text("Debe seleccionar un tipo", color = MaterialTheme.colorScheme.error)
-        }
-
         Spacer(modifier = Modifier.height(8.dp))
 
         Box {
@@ -99,76 +91,47 @@ fun PantallaRegistro(
             }
         }
 
-        if (mostrarError && categoria.isBlank()) {
-            Text("Debe seleccionar una categoría", color = MaterialTheme.colorScheme.error)
-        }
-
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = monto,
-            onValueChange = { monto = it },
-            label = { Text("Monto") },
-            isError = mostrarError && (monto.isBlank() || montoDouble == null || montoDouble <= 0),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = fecha,
-            onValueChange = { fecha = it },
-            label = { Text("Fecha (YYYY-MM-DD)") },
-            isError = mostrarError && fecha.isBlank(),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = descripcion,
-            onValueChange = { descripcion = it },
-            label = { Text("Descripción") },
-            modifier = Modifier.fillMaxWidth()
+            value = mes,
+            onValueChange = { mes = it },
+            label = { Text("Mes (YYYY-MM)") },
+            modifier = Modifier.fillMaxWidth(),
+            isError = mostrarError && mes.isBlank()
         )
 
         if (mostrarError) {
             Spacer(modifier = Modifier.height(8.dp))
-
             Text(
-                text = "Complete los campos obligatorios correctamente.",
+                text = "Debe seleccionar tipo, categoría y mes.",
                 color = MaterialTheme.colorScheme.error
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = {
-            if (
-                tipo.isBlank() ||
-                categoria.isBlank() ||
-                monto.isBlank() ||
-                montoDouble == null ||
-                montoDouble <= 0 ||
-                fecha.isBlank()
-            ) {
-                mostrarError = true
-            } else {
-                val movimiento = Movimiento(
-                    id = movimientoEditar?.id ?: 0,
-                    tipo = tipo,
-                    categoria = categoria,
-                    monto = montoDouble,
-                    fecha = fecha,
-                    descripcion = descripcion
-                )
-
-                if (movimientoEditar == null) {
-                    viewModel.insertarMovimiento(movimiento)
+        Button(
+            onClick = {
+                if (tipo.isBlank() || categoria.isBlank() || mes.isBlank()) {
+                    mostrarError = true
                 } else {
-                    viewModel.actualizarMovimiento(movimiento)
+                    mostrarError = false
+                    viewModel.consultarTotal(categoria, mes)
                 }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Consultar total")
+        }
 
-                onVolver()
-            }
-        }) {
-            Text(if (movimientoEditar == null) "Guardar" else "Actualizar")
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (totalConsulta != null) {
+            Text(
+                text = "Total en $categoria durante $mes: $${totalConsulta ?: 0.0}",
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 }

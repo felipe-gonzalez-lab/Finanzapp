@@ -14,6 +14,7 @@ fun PantallaPrincipal(
 ) {
     var mostrarRegistro by remember { mutableStateOf(false) }
     var mostrarLista by remember { mutableStateOf(false) }
+    var mostrarConsulta by remember { mutableStateOf(false) }
     var movimientoEditar by remember { mutableStateOf<Movimiento?>(null) }
 
     if (mostrarRegistro) {
@@ -34,6 +35,11 @@ fun PantallaPrincipal(
                 mostrarLista = false
                 mostrarRegistro = true
             }
+        )
+    } else if (mostrarConsulta) {
+        PantallaConsulta(
+            viewModel = viewModel,
+            onVolver = { mostrarConsulta = false }
         )
     } else {
         Scaffold { padding ->
@@ -70,6 +76,15 @@ fun PantallaPrincipal(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Ver movimientos")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = { mostrarConsulta = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Consultar por categoría")
                 }
             }
         }
