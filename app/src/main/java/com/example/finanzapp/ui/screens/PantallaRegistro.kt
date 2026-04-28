@@ -20,6 +20,10 @@ fun PantallaRegistro(
     var fecha by remember { mutableStateOf(movimientoEditar?.fecha ?: "") }
     var descripcion by remember { mutableStateOf(movimientoEditar?.descripcion ?: "") }
 
+    var mostrarError by remember { mutableStateOf(false) }
+
+    val montoDouble = monto.toDoubleOrNull()
+
     Column(modifier = Modifier.padding(16.dp)) {
 
         Button(onClick = { onVolver() }) {
@@ -35,32 +39,79 @@ fun PantallaRegistro(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        OutlinedTextField(value = tipo, onValueChange = { tipo = it }, label = { Text("Tipo (Ingreso/Gasto)") })
-        OutlinedTextField(value = categoria, onValueChange = { categoria = it }, label = { Text("Categoría") })
-        OutlinedTextField(value = monto, onValueChange = { monto = it }, label = { Text("Monto") })
-        OutlinedTextField(value = fecha, onValueChange = { fecha = it }, label = { Text("Fecha (YYYY-MM-DD)") })
-        OutlinedTextField(value = descripcion, onValueChange = { descripcion = it }, label = { Text("Descripción") })
+        OutlinedTextField(
+            value = tipo,
+            onValueChange = { tipo = it },
+            label = { Text("Tipo (Ingreso/Gasto)") },
+            isError = mostrarError && tipo.isBlank()
+        )
+
+        OutlinedTextField(
+            value = categoria,
+            onValueChange = { categoria = it },
+            label = { Text("Categoría") },
+            isError = mostrarError && categoria.isBlank()
+        )
+
+        OutlinedTextField(
+            value = monto,
+            onValueChange = { monto = it },
+            label = { Text("Monto") },
+            isError = mostrarError && (monto.isBlank() || montoDouble == null || montoDouble <= 0)
+        )
+
+        OutlinedTextField(
+            value = fecha,
+            onValueChange = { fecha = it },
+            label = { Text("Fecha (YYYY-MM-DD)") },
+            isError = mostrarError && fecha.isBlank()
+        )
+
+        OutlinedTextField(
+            value = descripcion,
+            onValueChange = { descripcion = it },
+            label = { Text("Descripción") }
+        )
+
+        if (mostrarError) {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Complete los campos obligatorios correctamente.",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            val movimiento = Movimiento(
-                id = movimientoEditar?.id ?: 0,
-                tipo = tipo,
-                categoria = categoria,
-                monto = monto.toDoubleOrNull() ?: 0.0,
-                fecha = fecha,
-                descripcion = descripcion
-            )
-
-            if (movimientoEditar == null) {
-                viewModel.insertarMovimiento(movimiento)
+            if (
+                tipo.isBlank() ||
+                categoria.isBlank() ||
+                monto.isBlank() ||
+                montoDouble == null ||
+                montoDouble <= 0 ||
+                fecha.isBlank()
+            ) {
+                mostrarError = true
             } else {
-                viewModel.actualizarMovimiento(movimiento)
+                val movimiento = Movimiento(
+                    id = movimientoEditar?.id ?: 0,
+                    tipo = tipo,
+                    categoria = categoria,
+                    monto = montoDouble,
+                    fecha = fecha,
+                    descripcion = descripcion
+                )
+
+                if (movimientoEditar == null) {
+                    viewModel.insertarMovimiento(movimiento)
+                } else {
+                    viewModel.actualizarMovimiento(movimiento)
+                }
+
+                onVolver()
             }
-
-            onVolver()
-
         }) {
             Text(if (movimientoEditar == null) "Guardar" else "Actualizar")
         }
