@@ -11,13 +11,14 @@ import com.example.finanzapp.viewmodel.MovimientoViewModel
 @Composable
 fun PantallaRegistro(
     viewModel: MovimientoViewModel,
-    onVolver: () -> Unit
+    onVolver: () -> Unit,
+    movimientoEditar: Movimiento? = null
 ) {
-    var tipo by remember { mutableStateOf("") }
-    var categoria by remember { mutableStateOf("") }
-    var monto by remember { mutableStateOf("") }
-    var fecha by remember { mutableStateOf("") }
-    var descripcion by remember { mutableStateOf("") }
+    var tipo by remember { mutableStateOf(movimientoEditar?.tipo ?: "") }
+    var categoria by remember { mutableStateOf(movimientoEditar?.categoria ?: "") }
+    var monto by remember { mutableStateOf(movimientoEditar?.monto?.toString() ?: "") }
+    var fecha by remember { mutableStateOf(movimientoEditar?.fecha ?: "") }
+    var descripcion by remember { mutableStateOf(movimientoEditar?.descripcion ?: "") }
 
     Column(modifier = Modifier.padding(16.dp)) {
 
@@ -27,7 +28,10 @@ fun PantallaRegistro(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Text("Registrar Movimiento", style = MaterialTheme.typography.headlineSmall)
+        Text(
+            text = if (movimientoEditar == null) "Registrar Movimiento" else "Editar Movimiento",
+            style = MaterialTheme.typography.headlineSmall
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -41,6 +45,7 @@ fun PantallaRegistro(
 
         Button(onClick = {
             val movimiento = Movimiento(
+                id = movimientoEditar?.id ?: 0,
                 tipo = tipo,
                 categoria = categoria,
                 monto = monto.toDoubleOrNull() ?: 0.0,
@@ -48,10 +53,16 @@ fun PantallaRegistro(
                 descripcion = descripcion
             )
 
-            viewModel.insertarMovimiento(movimiento)
+            if (movimientoEditar == null) {
+                viewModel.insertarMovimiento(movimiento)
+            } else {
+                viewModel.actualizarMovimiento(movimiento)
+            }
+
+            onVolver()
 
         }) {
-            Text("Guardar")
+            Text(if (movimientoEditar == null) "Guardar" else "Actualizar")
         }
     }
 }

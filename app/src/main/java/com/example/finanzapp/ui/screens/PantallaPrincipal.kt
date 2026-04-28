@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.finanzapp.viewmodel.MovimientoViewModel
+import com.example.finanzapp.data.local.entity.Movimiento
 
 @Composable
 fun PantallaPrincipal(
@@ -13,16 +14,26 @@ fun PantallaPrincipal(
 ) {
     var mostrarRegistro by remember { mutableStateOf(false) }
     var mostrarLista by remember { mutableStateOf(false) }
+    var movimientoEditar by remember { mutableStateOf<Movimiento?>(null) }
 
     if (mostrarRegistro) {
         PantallaRegistro(
             viewModel = viewModel,
-            onVolver = { mostrarRegistro = false }
+            onVolver = {
+                mostrarRegistro = false
+                movimientoEditar = null
+            },
+            movimientoEditar = movimientoEditar
         )
     } else if (mostrarLista) {
         PantallaLista(
             viewModel = viewModel,
-            onVolver = { mostrarLista = false }
+            onVolver = { mostrarLista = false },
+            onEditar = { movimiento ->
+                movimientoEditar = movimiento
+                mostrarLista = false
+                mostrarRegistro = true
+            }
         )
     } else {
         Scaffold { padding ->

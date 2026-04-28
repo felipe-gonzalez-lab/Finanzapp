@@ -8,11 +8,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.finanzapp.viewmodel.MovimientoViewModel
+import com.example.finanzapp.data.local.entity.Movimiento
 
 @Composable
 fun PantallaLista(
     viewModel: MovimientoViewModel,
-    onVolver: () -> Unit
+    onVolver: () -> Unit,
+    onEditar: (Movimiento) -> Unit
 ) {
     val movimientos by viewModel.movimientos.collectAsState()
 
@@ -44,6 +46,25 @@ fun PantallaLista(
                         Text("Categoría: ${movimiento.categoria}")
                         Text("Monto: ${movimiento.monto}")
                         Text("Fecha: ${movimiento.fecha}")
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Button(
+                            onClick = {
+                                viewModel.eliminarMovimiento(movimiento)
+                            }
+                        ) {
+                            Text("Eliminar")
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Button(
+                            onClick = {
+                                onEditar(movimiento)
+                            }
+                        ) {
+                            Text("Editar")
+                        }
                     }
                 }
             }
