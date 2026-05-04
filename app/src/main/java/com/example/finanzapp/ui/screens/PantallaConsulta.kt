@@ -7,9 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.finanzapp.data.model.CategoriasFinancieras
 import com.example.finanzapp.viewmodel.MovimientoViewModel
-import java.time.YearMonth
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 @Composable
 fun PantallaConsulta(
@@ -28,13 +25,8 @@ fun PantallaConsulta(
     val categoriasDisponibles = CategoriasFinancieras.obtenerCategoriasPorTipo(tipo)
 
     fun mesValido(mesTexto: String): Boolean {
-        return try {
-            val formato = DateTimeFormatter.ofPattern("yyyy-MM")
-            val mesParseado = YearMonth.parse(mesTexto, formato)
-            mesParseado.format(formato) == mesTexto
-        } catch (e: DateTimeParseException) {
-            false
-        }
+        val regex = Regex("""^\d{4}-(0[1-9]|1[0-2])$""")
+        return regex.matches(mesTexto)
     }
 
     val esMesValido = mesValido(mes)

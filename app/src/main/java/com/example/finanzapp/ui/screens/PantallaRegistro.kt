@@ -8,9 +8,6 @@ import androidx.compose.ui.unit.dp
 import com.example.finanzapp.data.local.entity.Movimiento
 import com.example.finanzapp.data.model.CategoriasFinancieras
 import com.example.finanzapp.viewmodel.MovimientoViewModel
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 @Composable
 fun PantallaRegistro(
@@ -32,13 +29,27 @@ fun PantallaRegistro(
     val categoriasDisponibles = CategoriasFinancieras.obtenerCategoriasPorTipo(tipo)
 
     fun fechaValida(fechaTexto: String): Boolean {
-        return try {
-            val formato = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val fechaParseada = LocalDate.parse(fechaTexto, formato)
-            fechaParseada.format(formato) == fechaTexto
-        } catch (e: DateTimeParseException) {
-            false
+        val regex = Regex("""^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$""")
+
+        if (!regex.matches(fechaTexto)) {
+            return false
         }
+
+        val partes = fechaTexto.split("-")
+        val anio = partes[0].toInt()
+        val mes = partes[1].toInt()
+        val dia = partes[2].toInt()
+
+        val esBisiesto = (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0)
+
+        val diasDelMes = when (mes) {
+            1, 3, 5, 7, 8, 10, 12 -> 31
+            4, 6, 9, 11 -> 30
+            2 -> if (esBisiesto) 29 else 28
+            else -> 0
+        }
+
+        return dia <= diasDelMes
     }
 
     val esFechaValida = fechaValida(fecha)
