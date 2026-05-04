@@ -7,6 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.finanzapp.data.model.CategoriasFinancieras
 import com.example.finanzapp.viewmodel.MovimientoViewModel
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 @Composable
 fun PantallaConsulta(
@@ -23,6 +26,18 @@ fun PantallaConsulta(
 
     val totalConsulta by viewModel.totalConsulta.collectAsState()
     val categoriasDisponibles = CategoriasFinancieras.obtenerCategoriasPorTipo(tipo)
+
+    fun mesValido(mesTexto: String): Boolean {
+        return try {
+            val formato = DateTimeFormatter.ofPattern("yyyy-MM")
+            val mesParseado = YearMonth.parse(mesTexto, formato)
+            mesParseado.format(formato) == mesTexto
+        } catch (e: DateTimeParseException) {
+            false
+        }
+    }
+
+    val esMesValido = mesValido(mes)
 
     Column(modifier = Modifier.padding(16.dp)) {
 
@@ -98,10 +113,18 @@ fun PantallaConsulta(
             onValueChange = { mes = it },
             label = { Text("Mes (YYYY-MM)") },
             modifier = Modifier.fillMaxWidth(),
-            isError = mostrarError && mes.isBlank()
+            isError = mostrarError && (mes.isBlank() || !esMesValido)
         )
 
-        if (mostrarError) {
+        if (mostrarError && mes.isNotBlank() && !esMesValido) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Ingrese un mes válido con formato YYYY-MM.",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
+        if (mostrarError && (tipo.isBlank() || categoria.isBlank() || mes.isBlank())) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Debe seleccionar tipo, categoría y mes.",
@@ -113,7 +136,7 @@ fun PantallaConsulta(
 
         Button(
             onClick = {
-                if (tipo.isBlank() || categoria.isBlank() || mes.isBlank()) {
+                if (tipo.isBlank() || categoria.isBlank() || mes.isBlank() || !esMesValido) {
                     mostrarError = true
                 } else {
                     mostrarError = false
