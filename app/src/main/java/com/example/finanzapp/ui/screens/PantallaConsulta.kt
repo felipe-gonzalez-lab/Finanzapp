@@ -117,7 +117,12 @@ fun PantallaConsulta(
                     mostrarError = true
                 } else {
                     mostrarError = false
-                    viewModel.consultarTotal(categoria, mes)
+
+                    when (categoria) {
+                        "Total Ingresos" -> viewModel.consultarTotalPorTipo("Ingreso", mes)
+                        "Total Gastos" -> viewModel.consultarTotalPorTipo("Gasto", mes)
+                        else -> viewModel.consultarTotal(categoria, mes)
+                    }
                 }
             },
             modifier = Modifier.fillMaxWidth()

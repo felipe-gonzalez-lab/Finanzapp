@@ -24,4 +24,11 @@ interface MovimientoDao {
         AND fecha LIKE :mes
     """)
     suspend fun totalPorCategoriaMes(categoria: String, mes: String): Double?
+
+    @Query("""
+        SELECT SUM(monto) FROM movimientos 
+        WHERE tipo = :tipo 
+        AND fecha LIKE :mes
+    """)
+    suspend fun totalPorTipoMes(tipo: String, mes: String): Double?
 }

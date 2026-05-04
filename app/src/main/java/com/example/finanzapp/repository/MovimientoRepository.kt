@@ -25,4 +25,8 @@ class MovimientoRepository(
     suspend fun totalPorCategoriaMes(categoria: String, mes: String): Double? {
         return movimientoDao.totalPorCategoriaMes(categoria, mes)
     }
+
+    suspend fun totalPorTipoMes(tipo: String, mes: String): Double? {
+        return movimientoDao.totalPorTipoMes(tipo, mes)
+    }
 }
