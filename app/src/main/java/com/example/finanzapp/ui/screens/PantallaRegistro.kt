@@ -8,6 +8,9 @@ import androidx.compose.ui.unit.dp
 import com.example.finanzapp.data.local.entity.Movimiento
 import com.example.finanzapp.data.model.CategoriasFinancieras
 import com.example.finanzapp.viewmodel.MovimientoViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 @Composable
 fun PantallaRegistro(
@@ -27,6 +30,18 @@ fun PantallaRegistro(
 
     val montoDouble = monto.toDoubleOrNull()
     val categoriasDisponibles = CategoriasFinancieras.obtenerCategoriasPorTipo(tipo)
+
+    fun fechaValida(fechaTexto: String): Boolean {
+        return try {
+            val formato = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val fechaParseada = LocalDate.parse(fechaTexto, formato)
+            fechaParseada.format(formato) == fechaTexto
+        } catch (e: DateTimeParseException) {
+            false
+        }
+    }
+
+    val esFechaValida = fechaValida(fecha)
 
     Column(modifier = Modifier.padding(16.dp)) {
 
@@ -113,13 +128,24 @@ fun PantallaRegistro(
             modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         OutlinedTextField(
             value = fecha,
             onValueChange = { fecha = it },
             label = { Text("Fecha (YYYY-MM-DD)") },
-            isError = mostrarError && fecha.isBlank(),
+            isError = mostrarError && (fecha.isBlank() || !esFechaValida),
             modifier = Modifier.fillMaxWidth()
         )
+
+        if (mostrarError && fecha.isNotBlank() && !esFechaValida) {
+            Text(
+                text = "Ingrese una fecha válida con formato YYYY-MM-DD.",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = descripcion,
@@ -146,7 +172,8 @@ fun PantallaRegistro(
                 monto.isBlank() ||
                 montoDouble == null ||
                 montoDouble <= 0 ||
-                fecha.isBlank()
+                fecha.isBlank() ||
+                !esFechaValida
             ) {
                 mostrarError = true
             } else {

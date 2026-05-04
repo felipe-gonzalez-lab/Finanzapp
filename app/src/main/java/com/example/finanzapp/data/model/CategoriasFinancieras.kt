@@ -14,7 +14,8 @@ object CategoriasFinancieras {
         "Inversiones",
         "Ventas",
         "Subsidios y Beneficios",
-        "Otros Ingresos"
+        "Otros Ingresos",
+        "Total Ingresos"
     )
 
     val categoriasGastos = listOf(
@@ -28,7 +29,8 @@ object CategoriasFinancieras {
         "Seguros",
         "Ahorro e Inversiones",
         "Entretenimiento y Ocio",
-        "Otros Gastos"
+        "Otros Gastos",
+        "Total Gastos"
     )
 
     fun obtenerCategoriasPorTipo(tipo: String): List<String> {

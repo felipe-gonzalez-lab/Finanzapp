@@ -50,4 +50,10 @@ class MovimientoViewModel(
             _totalConsulta.value = repository.totalPorCategoriaMes(categoria, "$mes%")
         }
     }
+
+    fun consultarTotalPorTipo(tipo: String, mes: String) {
+        viewModelScope.launch {
+            _totalConsulta.value = repository.totalPorTipoMes(tipo, "$mes%")
+        }
+    }
 }
