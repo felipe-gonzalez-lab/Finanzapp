@@ -22,7 +22,7 @@ fun PantallaConsulta(
     var mostrarError by remember { mutableStateOf(false) }
 
     val totalConsulta by viewModel.totalConsulta.collectAsState()
-    val categoriasDisponibles = CategoriasFinancieras.obtenerCategoriasPorTipo(tipo)
+    val categoriasDisponibles = CategoriasFinancieras.obtenerCategoriasConsultaPorTipo(tipo)
 
     fun mesValido(mesTexto: String): Boolean {
         val regex = Regex("""^\d{4}-(0[1-9]|1[0-2])$""")

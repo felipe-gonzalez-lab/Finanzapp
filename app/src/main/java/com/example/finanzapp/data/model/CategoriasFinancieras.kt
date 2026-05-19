@@ -7,18 +7,17 @@ object CategoriasFinancieras {
         "Gasto"
     )
 
-    val categoriasIngresos = listOf(
+    private val categoriasIngresosBase = listOf(
         "Sueldo",
         "Bonos y Comisiones",
         "Reembolsos",
         "Inversiones",
         "Ventas",
         "Subsidios y Beneficios",
-        "Otros Ingresos",
-        "Total Ingresos"
+        "Otros Ingresos"
     )
 
-    val categoriasGastos = listOf(
+    private val categoriasGastosBase = listOf(
         "Vivienda",
         "Alimentación",
         "Transporte",
@@ -29,14 +28,21 @@ object CategoriasFinancieras {
         "Seguros",
         "Ahorro e Inversiones",
         "Entretenimiento y Ocio",
-        "Otros Gastos",
-        "Total Gastos"
+        "Otros Gastos"
     )
 
-    fun obtenerCategoriasPorTipo(tipo: String): List<String> {
+    fun obtenerCategoriasRegistroPorTipo(tipo: String): List<String> {
         return when (tipo) {
-            "Ingreso" -> categoriasIngresos
-            "Gasto" -> categoriasGastos
+            "Ingreso" -> categoriasIngresosBase
+            "Gasto" -> categoriasGastosBase
+            else -> emptyList()
+        }
+    }
+
+    fun obtenerCategoriasConsultaPorTipo(tipo: String): List<String> {
+        return when (tipo) {
+            "Ingreso" -> categoriasIngresosBase + "Total Ingresos"
+            "Gasto" -> categoriasGastosBase + "Total Gastos"
             else -> emptyList()
         }
     }

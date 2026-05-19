@@ -26,7 +26,7 @@ fun PantallaRegistro(
     var mostrarCategorias by remember { mutableStateOf(false) }
 
     val montoDouble = monto.toDoubleOrNull()
-    val categoriasDisponibles = CategoriasFinancieras.obtenerCategoriasPorTipo(tipo)
+    val categoriasDisponibles = CategoriasFinancieras.obtenerCategoriasRegistroPorTipo(tipo)
 
     fun fechaValida(fechaTexto: String): Boolean {
         val regex = Regex("""^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$""")
