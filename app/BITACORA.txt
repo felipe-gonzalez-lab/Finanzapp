@@ -1,3 +1,11 @@
+BITÁCORA TÉCNICA - GENERACIÓN APK FIRMADO
+
+Proyecto:
+Finanzapp
+
+Branch utilizada:
+parte-2-creacion-apk-y-jks
+
 Alias utilizado:
 finanzapp
 
@@ -5,19 +13,24 @@ Ruta del archivo .jks:
 C:\Users\flgon\OneDrive\Documentos\Keystores\finanzapp-keystore.jks
 
 Fecha y hora de generación:
-18 de mayo de 2026, 20:23
+18 de mayo de 2026, 20:23 horas
 
-----------------------------------------------------------------------
-Abrir el archivo apk desde el emulador para probar la aplicación.
-puede existir conflicto entre la version release y la version "debug"
-que se generó cuando apretamos el run de la app. Para eso desinstalar
-la version "debug" del emulador.
-----------------------------------------------------------------------
+Archivo APK generado:
+app-release.apk
 
-KeyStore utilizado:
-finanzapp-keystore.jks
+Ruta del APK generado:
+C:\Users\flgon\AndroidStudioProjects\Finanzapp\app\release\app-release.apk
 
-Resultado de la prueba de instalacion:
+Modo de compilación:
+Release
+
+Resultado de la prueba de instalación:
 El APK se instaló correctamente en el emulador Android Medium Phone API 36.1.
 
+Verificación de funcionamiento:
+La aplicación Finanzapp se abrió correctamente desde el emulador luego de instalar el APK firmado.
 
+Observación técnica:
+Durante una primera instalación apareció el error INSTALL_FAILED_UPDATE_INCOMPATIBLE,
+debido a que el emulador tenía instalada una versión previa de la aplicación con otra firma.
+Se desinstaló la versión anterior y luego el APK release firmado se instaló correctamente.
