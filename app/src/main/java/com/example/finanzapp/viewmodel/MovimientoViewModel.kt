@@ -46,8 +46,29 @@ class MovimientoViewModel(
 
     fun actualizarMovimiento(movimiento: Movimiento) {
         viewModelScope.launch {
-            repository.actualizar(movimiento)
-            cargarMovimientos()
+            try {
+                movimiento.backendId?.let { backendId ->
+                    val movimientoApi = MovimientoApi(
+                        id = backendId,
+                        tipo = movimiento.tipo,
+                        categoria = movimiento.categoria,
+                        monto = movimiento.monto,
+                        fecha = movimiento.fecha,
+                        descripcion = movimiento.descripcion
+                    )
+
+                    remoteRepository.actualizarMovimiento(
+                        id = backendId,
+                        movimiento = movimientoApi
+                    )
+                }
+
+                repository.actualizar(movimiento)
+                _mensajeBackend.value = "Movimiento actualizado correctamente"
+                cargarMovimientos()
+            } catch (e: Exception) {
+                _mensajeBackend.value = "No se pudo actualizar el movimiento en el backend"
+            }
         }
     }
 
