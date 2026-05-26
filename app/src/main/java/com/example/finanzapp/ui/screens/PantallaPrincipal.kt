@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.finanzapp.viewmodel.MovimientoViewModel
+import com.example.finanzapp.viewmodel.MovimientoRemoteViewModel
 import com.example.finanzapp.data.local.entity.Movimiento
 
 @Composable
@@ -15,7 +16,10 @@ fun PantallaPrincipal(
     var mostrarRegistro by remember { mutableStateOf(false) }
     var mostrarLista by remember { mutableStateOf(false) }
     var mostrarConsulta by remember { mutableStateOf(false) }
+    var mostrarBackend by remember { mutableStateOf(false) }
     var movimientoEditar by remember { mutableStateOf<Movimiento?>(null) }
+
+    val remoteViewModel = remember { MovimientoRemoteViewModel() }
 
     if (mostrarRegistro) {
         PantallaRegistro(
@@ -40,6 +44,11 @@ fun PantallaPrincipal(
         PantallaConsulta(
             viewModel = viewModel,
             onVolver = { mostrarConsulta = false }
+        )
+    } else if (mostrarBackend) {
+        PantallaBackend(
+            viewModel = remoteViewModel,
+            onVolver = { mostrarBackend = false }
         )
     } else {
         Scaffold { padding ->
@@ -85,6 +94,15 @@ fun PantallaPrincipal(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Consultar por categoría")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = { mostrarBackend = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Probar Backend")
                 }
             }
         }
