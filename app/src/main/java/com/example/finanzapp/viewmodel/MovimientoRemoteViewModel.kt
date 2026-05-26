@@ -49,4 +49,37 @@ class MovimientoRemoteViewModel : ViewModel() {
             }
         }
     }
+
+    fun actualizarMovimientoBackend(id: Long) {
+        viewModelScope.launch {
+            try {
+                val movimientoActualizado = MovimientoApi(
+                    id = id,
+                    tipo = "Gasto",
+                    categoria = "Servicios básicos",
+                    monto = 30000.0,
+                    fecha = "2026-05-26",
+                    descripcion = "Movimiento actualizado desde Android"
+                )
+
+                repository.actualizarMovimiento(id, movimientoActualizado)
+                _mensajeBackend.value = "Movimiento actualizado en backend"
+                cargarMovimientosBackend()
+            } catch (e: Exception) {
+                _mensajeBackend.value = "Error al actualizar movimiento: ${e.message}"
+            }
+        }
+    }
+
+    fun eliminarMovimientoBackend(id: Long) {
+        viewModelScope.launch {
+            try {
+                repository.eliminarMovimiento(id)
+                _mensajeBackend.value = "Movimiento eliminado del backend"
+                cargarMovimientosBackend()
+            } catch (e: Exception) {
+                _mensajeBackend.value = "Error al eliminar movimiento: ${e.message}"
+            }
+        }
+    }
 }

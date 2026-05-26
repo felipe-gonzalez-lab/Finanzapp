@@ -70,7 +70,8 @@ fun PantallaBackend(
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(12.dp)
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Text("ID: ${movimiento.id}")
                         Text("Tipo: ${movimiento.tipo}")
@@ -78,6 +79,28 @@ fun PantallaBackend(
                         Text("Monto: $${movimiento.monto}")
                         Text("Fecha: ${movimiento.fecha}")
                         Text("Descripción: ${movimiento.descripcion ?: "Sin descripción"}")
+
+                        Button(
+                            onClick = {
+                                movimiento.id?.let { id ->
+                                    viewModel.actualizarMovimientoBackend(id)
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Editar en backend")
+                        }
+
+                        Button(
+                            onClick = {
+                                movimiento.id?.let { id ->
+                                    viewModel.eliminarMovimientoBackend(id)
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Eliminar del backend")
+                        }
                     }
                 }
             }
