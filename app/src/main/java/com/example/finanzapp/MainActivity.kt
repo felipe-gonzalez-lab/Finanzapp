@@ -20,7 +20,9 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             AppDatabase::class.java,
             "finanzapp_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(true)
+            .build()
 
         val repository = MovimientoRepository(database.movimientoDao())
         val factory = MovimientoViewModelFactory(repository)

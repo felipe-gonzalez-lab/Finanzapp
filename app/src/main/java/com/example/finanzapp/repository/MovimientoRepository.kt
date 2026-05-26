@@ -6,8 +6,8 @@ import com.example.finanzapp.data.local.entity.Movimiento
 class MovimientoRepository(
     private val movimientoDao: MovimientoDao
 ) {
-    suspend fun insertar(movimiento: Movimiento) {
-        movimientoDao.insertar(movimiento)
+    suspend fun insertar(movimiento: Movimiento): Long {
+        return movimientoDao.insertar(movimiento)
     }
 
     suspend fun actualizar(movimiento: Movimiento) {
@@ -20,6 +20,10 @@ class MovimientoRepository(
 
     suspend fun obtenerTodos(): List<Movimiento> {
         return movimientoDao.obtenerTodos()
+    }
+
+    suspend fun actualizarBackendId(id: Int, backendId: Long) {
+        movimientoDao.actualizarBackendId(id, backendId)
     }
 
     suspend fun totalPorCategoriaMes(categoria: String, mes: String): Double? {

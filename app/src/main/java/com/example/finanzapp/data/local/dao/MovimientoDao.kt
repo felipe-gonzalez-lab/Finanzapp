@@ -7,7 +7,7 @@ import com.example.finanzapp.data.local.entity.Movimiento
 interface MovimientoDao {
 
     @Insert
-    suspend fun insertar(movimiento: Movimiento)
+    suspend fun insertar(movimiento: Movimiento): Long
 
     @Update
     suspend fun actualizar(movimiento: Movimiento)
@@ -17,6 +17,9 @@ interface MovimientoDao {
 
     @Query("SELECT * FROM movimientos ORDER BY fecha DESC")
     suspend fun obtenerTodos(): List<Movimiento>
+
+    @Query("UPDATE movimientos SET backendId = :backendId WHERE id = :id")
+    suspend fun actualizarBackendId(id: Int, backendId: Long)
 
     @Query("""
         SELECT SUM(monto) FROM movimientos 

@@ -33,8 +33,13 @@ class MovimientoViewModel(
 
     fun insertarMovimiento(movimiento: Movimiento) {
         viewModelScope.launch {
-            repository.insertar(movimiento)
-            enviarMovimientoAlBackend(movimiento)
+            val idLocal = repository.insertar(movimiento).toInt()
+
+            enviarMovimientoAlBackend(
+                movimiento = movimiento,
+                idLocal = idLocal
+            )
+
             cargarMovimientos()
         }
     }
@@ -48,8 +53,17 @@ class MovimientoViewModel(
 
     fun eliminarMovimiento(movimiento: Movimiento) {
         viewModelScope.launch {
-            repository.eliminar(movimiento)
-            cargarMovimientos()
+            try {
+                movimiento.backendId?.let { backendId ->
+                    remoteRepository.eliminarMovimiento(backendId)
+                }
+
+                repository.eliminar(movimiento)
+                _mensajeBackend.value = "Movimiento eliminado correctamente"
+                cargarMovimientos()
+            } catch (e: Exception) {
+                _mensajeBackend.value = "No se pudo eliminar el movimiento del backend"
+            }
         }
     }
 
@@ -65,7 +79,10 @@ class MovimientoViewModel(
         }
     }
 
-    private suspend fun enviarMovimientoAlBackend(movimiento: Movimiento) {
+    private suspend fun enviarMovimientoAlBackend(
+        movimiento: Movimiento,
+        idLocal: Int
+    ) {
         try {
             val movimientoApi = MovimientoApi(
                 tipo = movimiento.tipo,
@@ -75,7 +92,15 @@ class MovimientoViewModel(
                 descripcion = movimiento.descripcion
             )
 
-            remoteRepository.crearMovimiento(movimientoApi)
+            val movimientoCreado = remoteRepository.crearMovimiento(movimientoApi)
+
+            movimientoCreado.id?.let { backendId ->
+                repository.actualizarBackendId(
+                    id = idLocal,
+                    backendId = backendId
+                )
+            }
+
             _mensajeBackend.value = "Movimiento enviado al backend correctamente"
         } catch (e: Exception) {
             _mensajeBackend.value = "El movimiento se guardó localmente, pero no se pudo enviar al backend"

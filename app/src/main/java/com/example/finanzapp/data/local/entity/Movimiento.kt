@@ -12,7 +12,8 @@ data class Movimiento(
     val categoria: String,
     val monto: Double,
     val fecha: String,
-    val descripcion: String
+    val descripcion: String,
+
+    val backendId: Long? = null
 )
 
-// Comentario test solamente para probar el commit y el push
