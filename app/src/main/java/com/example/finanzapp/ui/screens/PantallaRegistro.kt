@@ -194,7 +194,8 @@ fun PantallaRegistro(
                     categoria = categoria,
                     monto = montoDouble,
                     fecha = fecha,
-                    descripcion = descripcion
+                    descripcion = descripcion,
+                    backendId = movimientoEditar?.backendId
                 )
 
                 if (movimientoEditar == null) {
