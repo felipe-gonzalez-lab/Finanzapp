@@ -1,11 +1,13 @@
 package com.example.finanzapp.ui.screens
 
+import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.finanzapp.data.local.entity.Movimiento
 import com.example.finanzapp.data.model.CategoriasFinancieras
@@ -17,6 +19,8 @@ fun PantallaRegistro(
     onVolver: () -> Unit,
     movimientoEditar: Movimiento? = null
 ) {
+    val context = LocalContext.current
+
     var tipo by remember { mutableStateOf(movimientoEditar?.tipo ?: "") }
     var categoria by remember { mutableStateOf(movimientoEditar?.categoria ?: "") }
     var monto by remember { mutableStateOf(movimientoEditar?.monto?.toString() ?: "") }
@@ -30,9 +34,16 @@ fun PantallaRegistro(
     var mostrarCategorias by remember { mutableStateOf(false) }
 
     val launcherGaleria = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
-        imagenUri = uri?.toString()
+        uri?.let {
+            context.contentResolver.takePersistableUriPermission(
+                it,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+
+            imagenUri = it.toString()
+        }
     }
 
     val montoDouble = monto.toDoubleOrNull()
@@ -179,7 +190,7 @@ fun PantallaRegistro(
 
         OutlinedButton(
             onClick = {
-                launcherGaleria.launch("image/*")
+                launcherGaleria.launch(arrayOf("image/*"))
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -193,6 +204,16 @@ fun PantallaRegistro(
                 text = "Comprobante seleccionado",
                 style = MaterialTheme.typography.bodyMedium
             )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            TextButton(
+                onClick = {
+                    imagenUri = null
+                }
+            ) {
+                Text("Quitar comprobante")
+            }
         }
 
         if (mostrarError) {

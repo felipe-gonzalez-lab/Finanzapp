@@ -6,7 +6,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.finanzapp.viewmodel.MovimientoViewModel
 import com.example.finanzapp.data.local.entity.Movimiento
 
@@ -52,11 +54,22 @@ fun PantallaLista(
                         }
 
                         if (movimiento.imagenUri != null) {
-                            Spacer(modifier = Modifier.height(6.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
 
                             Text(
                                 text = "Comprobante adjunto",
                                 style = MaterialTheme.typography.bodyMedium
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            AsyncImage(
+                                model = movimiento.imagenUri,
+                                contentDescription = "Comprobante del movimiento",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(160.dp),
+                                contentScale = ContentScale.Crop
                             )
                         }
 
