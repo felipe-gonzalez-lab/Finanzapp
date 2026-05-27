@@ -1,6 +1,7 @@
 package com.example.finanzapp.ui.screens
 
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -9,9 +10,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import com.example.finanzapp.data.local.entity.Movimiento
 import com.example.finanzapp.data.model.CategoriasFinancieras
 import com.example.finanzapp.viewmodel.MovimientoViewModel
+import java.io.File
 
 @Composable
 fun PantallaRegistro(
@@ -28,10 +31,30 @@ fun PantallaRegistro(
     var descripcion by remember { mutableStateOf(movimientoEditar?.descripcion ?: "") }
 
     var imagenUri by remember { mutableStateOf(movimientoEditar?.imagenUri) }
+    var uriFotoCamara by remember { mutableStateOf<Uri?>(null) }
 
     var mostrarError by remember { mutableStateOf(false) }
     var mostrarTipos by remember { mutableStateOf(false) }
     var mostrarCategorias by remember { mutableStateOf(false) }
+
+    fun crearUriParaFoto(): Uri {
+        val carpeta = File(context.filesDir, "comprobantes")
+
+        if (!carpeta.exists()) {
+            carpeta.mkdirs()
+        }
+
+        val archivo = File(
+            carpeta,
+            "comprobante_${System.currentTimeMillis()}.jpg"
+        )
+
+        return FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            archivo
+        )
+    }
 
     val launcherGaleria = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
@@ -43,6 +66,14 @@ fun PantallaRegistro(
             )
 
             imagenUri = it.toString()
+        }
+    }
+
+    val launcherCamara = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { fotoGuardada ->
+        if (fotoGuardada) {
+            imagenUri = uriFotoCamara?.toString()
         }
     }
 
@@ -195,6 +226,19 @@ fun PantallaRegistro(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Seleccionar comprobante desde galería")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedButton(
+            onClick = {
+                val nuevaUri = crearUriParaFoto()
+                uriFotoCamara = nuevaUri
+                launcherCamara.launch(nuevaUri)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Tomar foto con cámara")
         }
 
         if (imagenUri != null) {
