@@ -1,5 +1,10 @@
 package com.example.finanzapp.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -32,7 +37,11 @@ fun PantallaPrincipal(
         indicadoresViewModel.cargarIndicadores()
     }
 
-    if (mostrarRegistro) {
+    AnimatedVisibility(
+        visible = mostrarRegistro,
+        enter = fadeIn() + slideInVertically(initialOffsetY = { it / 4 }),
+        exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 4 })
+    ) {
         PantallaRegistro(
             viewModel = viewModel,
             onVolver = {
@@ -41,7 +50,13 @@ fun PantallaPrincipal(
             },
             movimientoEditar = movimientoEditar
         )
-    } else if (mostrarLista) {
+    }
+
+    AnimatedVisibility(
+        visible = mostrarLista,
+        enter = fadeIn() + slideInVertically(initialOffsetY = { it / 4 }),
+        exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 4 })
+    ) {
         PantallaLista(
             viewModel = viewModel,
             onVolver = {
@@ -53,14 +68,26 @@ fun PantallaPrincipal(
                 mostrarRegistro = true
             }
         )
-    } else if (mostrarConsulta) {
+    }
+
+    AnimatedVisibility(
+        visible = mostrarConsulta,
+        enter = fadeIn() + slideInVertically(initialOffsetY = { it / 4 }),
+        exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 4 })
+    ) {
         PantallaConsulta(
             viewModel = viewModel,
             onVolver = {
                 mostrarConsulta = false
             }
         )
-    } else {
+    }
+
+    AnimatedVisibility(
+        visible = !mostrarRegistro && !mostrarLista && !mostrarConsulta,
+        enter = fadeIn() + slideInVertically(initialOffsetY = { -it / 8 }),
+        exit = fadeOut() + slideOutVertically(targetOffsetY = { -it / 8 })
+    ) {
         Scaffold { padding ->
             Column(
                 modifier = Modifier
