@@ -7,9 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.finanzapp.data.local.entity.Movimiento
 import com.example.finanzapp.viewmodel.IndicadoresViewModel
-import com.example.finanzapp.viewmodel.MovimientoRemoteViewModel
 import com.example.finanzapp.viewmodel.MovimientoViewModel
-
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -21,12 +19,10 @@ fun PantallaPrincipal(
     var mostrarRegistro by remember { mutableStateOf(false) }
     var mostrarLista by remember { mutableStateOf(false) }
     var mostrarConsulta by remember { mutableStateOf(false) }
-    var mostrarBackend by remember { mutableStateOf(false) }
     var movimientoEditar by remember { mutableStateOf<Movimiento?>(null) }
 
-    val remoteViewModel = remember { MovimientoRemoteViewModel() }
-
     val indicadoresState by indicadoresViewModel.indicadoresState.collectAsState()
+
     val formatoChileno = NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
         minimumFractionDigits = 2
         maximumFractionDigits = 2
@@ -48,7 +44,9 @@ fun PantallaPrincipal(
     } else if (mostrarLista) {
         PantallaLista(
             viewModel = viewModel,
-            onVolver = { mostrarLista = false },
+            onVolver = {
+                mostrarLista = false
+            },
             onEditar = { movimiento ->
                 movimientoEditar = movimiento
                 mostrarLista = false
@@ -58,12 +56,9 @@ fun PantallaPrincipal(
     } else if (mostrarConsulta) {
         PantallaConsulta(
             viewModel = viewModel,
-            onVolver = { mostrarConsulta = false }
-        )
-    } else if (mostrarBackend) {
-        PantallaBackend(
-            viewModel = remoteViewModel,
-            onVolver = { mostrarBackend = false }
+            onVolver = {
+                mostrarConsulta = false
+            }
         )
     } else {
         Scaffold { padding ->
@@ -109,9 +104,21 @@ fun PantallaPrincipal(
                             }
 
                             else -> {
-                                Text(text = "Dólar: ${formatoChileno.format(indicadoresState.dolar ?: 0.0)}")
-                                Text(text = "Euro: ${formatoChileno.format(indicadoresState.euro ?: 0.0)}")
-                                Text(text = "UF: ${formatoChileno.format(indicadoresState.uf ?: 0.0)}")
+                                Text(
+                                    text = "Dólar: ${
+                                        formatoChileno.format(indicadoresState.dolar ?: 0.0)
+                                    }"
+                                )
+                                Text(
+                                    text = "Euro: ${
+                                        formatoChileno.format(indicadoresState.euro ?: 0.0)
+                                    }"
+                                )
+                                Text(
+                                    text = "UF: ${
+                                        formatoChileno.format(indicadoresState.uf ?: 0.0)
+                                    }"
+                                )
                             }
                         }
                     }
@@ -120,7 +127,9 @@ fun PantallaPrincipal(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = { mostrarRegistro = true },
+                    onClick = {
+                        mostrarRegistro = true
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Registrar movimiento")
@@ -129,7 +138,9 @@ fun PantallaPrincipal(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Button(
-                    onClick = { mostrarLista = true },
+                    onClick = {
+                        mostrarLista = true
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Ver movimientos")
@@ -138,19 +149,12 @@ fun PantallaPrincipal(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Button(
-                    onClick = { mostrarConsulta = true },
+                    onClick = {
+                        mostrarConsulta = true
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Consultar por categoría")
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Button(
-                    onClick = { mostrarBackend = true },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Probar Backend")
                 }
             }
         }
