@@ -14,6 +14,6 @@ data class Movimiento(
     val fecha: String,
     val descripcion: String,
 
-    val backendId: Long? = null
+    val backendId: Long? = null,
+    val imagenUri: String? = null
 )
-

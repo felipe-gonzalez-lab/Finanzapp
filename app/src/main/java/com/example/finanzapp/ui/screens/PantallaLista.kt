@@ -47,6 +47,19 @@ fun PantallaLista(
                         Text("Monto: ${movimiento.monto}")
                         Text("Fecha: ${movimiento.fecha}")
 
+                        if (movimiento.descripcion.isNotBlank()) {
+                            Text("Descripción: ${movimiento.descripcion}")
+                        }
+
+                        if (movimiento.imagenUri != null) {
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            Text(
+                                text = "Comprobante adjunto",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Button(
@@ -56,6 +69,7 @@ fun PantallaLista(
                         ) {
                             Text("Eliminar")
                         }
+
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Button(

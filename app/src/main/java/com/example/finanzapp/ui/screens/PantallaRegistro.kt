@@ -1,5 +1,7 @@
 package com.example.finanzapp.ui.screens
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,9 +23,17 @@ fun PantallaRegistro(
     var fecha by remember { mutableStateOf(movimientoEditar?.fecha ?: "") }
     var descripcion by remember { mutableStateOf(movimientoEditar?.descripcion ?: "") }
 
+    var imagenUri by remember { mutableStateOf(movimientoEditar?.imagenUri) }
+
     var mostrarError by remember { mutableStateOf(false) }
     var mostrarTipos by remember { mutableStateOf(false) }
     var mostrarCategorias by remember { mutableStateOf(false) }
+
+    val launcherGaleria = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        imagenUri = uri?.toString()
+    }
 
     val montoDouble = monto.toDoubleOrNull()
     val categoriasDisponibles = CategoriasFinancieras.obtenerCategoriasRegistroPorTipo(tipo)
@@ -165,6 +175,26 @@ fun PantallaRegistro(
             modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = {
+                launcherGaleria.launch("image/*")
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Seleccionar comprobante desde galería")
+        }
+
+        if (imagenUri != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Comprobante seleccionado",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
         if (mostrarError) {
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -195,7 +225,8 @@ fun PantallaRegistro(
                     monto = montoDouble,
                     fecha = fecha,
                     descripcion = descripcion,
-                    backendId = movimientoEditar?.backendId
+                    backendId = movimientoEditar?.backendId,
+                    imagenUri = imagenUri
                 )
 
                 if (movimientoEditar == null) {
